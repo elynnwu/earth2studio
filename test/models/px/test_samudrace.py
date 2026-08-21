@@ -215,7 +215,25 @@ def build_coupled_stepper():
 
 
 @pytest.fixture(autouse=True)
-def fme_distributed():
+def fme_device(request):
+    """Build fme's internal tensors on the device under test.
+
+    fme places its normalizer and mask tensors on ``fme.get_device()`` when the
+    stepper is constructed, not on the wrapper's device.  On a CUDA machine
+    that would put them on cuda for every test, so the cpu cases would fail in
+    ``model.to("cpu")`` and the unparametrized cases would fail on their cpu
+    inputs.  Force cpu unless the case asks for cuda.
+    """
+    from fme.core.device import force_cpu
+
+    callspec = getattr(request.node, "callspec", None)
+    device = callspec.params.get("device", "cpu") if callspec else "cpu"
+    with force_cpu(not str(device).startswith("cuda")):
+        yield
+
+
+@pytest.fixture(autouse=True)
+def fme_distributed(fme_device):
     """Enter fme's distributed context around each test."""
     from fme.core.distributed.distributed import Distributed
 
