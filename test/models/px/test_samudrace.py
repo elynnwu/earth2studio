@@ -755,7 +755,7 @@ def test_samudrace_package(device):
     assert "t2m" in in_coords["variable"]
     assert "thetao2p5m" in in_coords["variable"]
     assert "mslhf" in out_vars
-    assert "siconc" in out_vars
+    assert "sic" in out_vars
     assert in_coords["lat"].shape == (180,)
     assert in_coords["lat"][0] > in_coords["lat"][-1]
 

@@ -113,7 +113,7 @@ def _build_variable_mappings() -> tuple[dict[str, str], dict[str, str]]:
         "sst": "sst",
         "zos": "zos",
         "sithick": "HI",
-        "siconc": "ocean_sea_ice_fraction",
+        "sic": "ocean_sea_ice_fraction",
     }
 
     # Atmosphere: CM4 model levels (k = 0..7)

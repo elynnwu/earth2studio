@@ -388,7 +388,6 @@ E2STUDIO_VOCAB = {
     "ewss": "eastward turbulent surface stress (N m-2 s)",
     "nsss": "northward turbulent surface stress (N m-2 s)",
     "sithick": "sea ice thickness (m)",
-    "siconc": "sea ice area fraction as seen by the ocean (0-1)",
     "zos": "sea surface height above geoid (m)",
     "mttwp": "tendency of total water path due to advection (kg m-2 s-1)",
     "thetao": "sea water potential temperature (degC)",

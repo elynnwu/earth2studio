@@ -92,6 +92,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   machine rather than reporting 6 failures
 - Fixed the `thetao` vocab entry declaring kelvin: SamudrACE serves sea water
   potential temperature in degC (only `sst` is converted to kelvin upstream)
+- Fixed SamudrACE serving its 0-1 sea ice fraction as `siconc`, which
+  `CMIP6Lexicon` and `CorrDiffCMIP6` already treat as a percentage; it is now
+  served as `sic`, the existing 0-1 fraction name, and the conflicting
+  `siconc` vocab entry is removed
 
 - Fixed `Aurora.create_iterator` first yield pairing a lead-sliced tensor with
   unsliced coords: `lead_time` kept `[-6h, 0h]` while the tensor held one
