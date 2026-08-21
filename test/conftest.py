@@ -101,6 +101,7 @@ _TEST_DEPENDENCIES: dict[str, list[str]] = {
     "test/models/px/test_graphcast.py": ["graphcast"],
     "test/models/px/test_interpmodafno.py": ["interp-modafno"],
     "test/models/px/test_pangu.py": ["pangu"],
+    "test/models/px/test_samudrace.py": ["samudrace"],
     "test/models/px/test_sfno.py": ["sfno"],
     "test/models/px/test_stormcast.py": ["stormcast"],
     "test/models/px/test_stormcastconus.py": ["stormcast-conus"],

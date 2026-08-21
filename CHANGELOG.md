@@ -84,6 +84,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed the SamudrACE px test suite never executing: `samudrace` is excluded
+  from the `all` extra, so `test-px-models` had no `fme` and the module-level
+  `importorskip` skipped every test. It now runs in
+  `test-px-models-conflicts` with a `_TEST_DEPENDENCIES` gate, and the suite
+  builds fme's tensors on the device under test so it passes on a CUDA
+  machine rather than reporting 6 failures
+- Fixed the `thetao` vocab entry declaring kelvin: SamudrACE serves sea water
+  potential temperature in degC (only `sst` is converted to kelvin upstream)
+
 - Fixed `Aurora.create_iterator` first yield pairing a lead-sliced tensor with
   unsliced coords: `lead_time` kept `[-6h, 0h]` while the tensor held one
   step. Coords are now sliced the same way as FuXi, DLWP and FengWu, so the

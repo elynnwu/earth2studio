@@ -215,7 +215,25 @@ def build_coupled_stepper():
 
 
 @pytest.fixture(autouse=True)
-def fme_distributed():
+def fme_device(request):
+    """Build fme's internal tensors on the device under test.
+
+    fme places its normalizer and mask tensors on ``fme.get_device()`` when the
+    stepper is constructed.  They are not registered buffers of the wrapper, so
+    ``PrognosticModel.to`` never moves them: on a CUDA machine they stay on
+    cuda and any test that runs a forward pass with cpu tensors fails inside
+    fme's normalizer.  Force cpu unless the case asks for cuda.
+    """
+    from fme.core.device import force_cpu
+
+    callspec = getattr(request.node, "callspec", None)
+    device = callspec.params.get("device", "cpu") if callspec else "cpu"
+    with force_cpu(not str(device).startswith("cuda")):
+        yield
+
+
+@pytest.fixture(autouse=True)
+def fme_distributed(fme_device):
     """Enter fme's distributed context around each test."""
     from fme.core.distributed.distributed import Distributed
 
@@ -714,8 +732,9 @@ def test_samudrace_load_default_package():
 
 
 @pytest.mark.package
-def test_samudrace_package():
-    """Load the real SamudrACE checkpoint and run one forward pass on CPU."""
+@pytest.mark.parametrize("device", device_params)
+def test_samudrace_package(device):
+    """Load the real SamudrACE checkpoint and run one coupled cycle."""
     from huggingface_hub import snapshot_download
 
     from earth2studio.data.samudrace import HF_REPO_ID, HF_REVISION, SamudrACEData
@@ -728,7 +747,7 @@ def test_samudrace_package():
         allow_patterns=["samudrACE_CM4_piControl_ckpt.tar"],
     )
     package = Package(snapshot_path)
-    model = SamudrACE.load_model(package, scenario="0151")
+    model = SamudrACE.load_model(package, scenario="0151").to(device)
 
     in_coords = model.input_coords()
     out_vars = list(model.output_coords(model.input_coords())["variable"])
@@ -743,7 +762,7 @@ def test_samudrace_package():
     # Published initial condition for the 0151 scenario
     time = np.array([np.datetime64("0151-01-06T00:00:00")])
     da = SamudrACEData(verbose=False)(time, in_coords["variable"])
-    x = torch.as_tensor(da.values, dtype=torch.float32)[None, :, None]
+    x = torch.as_tensor(da.values, dtype=torch.float32)[None, :, None].to(device)
     coords = in_coords.copy()
     coords["batch"] = np.arange(1)
     coords["time"] = time
